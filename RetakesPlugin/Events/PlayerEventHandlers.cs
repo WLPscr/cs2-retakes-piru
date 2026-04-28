@@ -31,19 +31,18 @@ public class PlayerEventHandlers
 
         player.ForceTeamTime = 3600.0f;
 
-        if(_plugin.Config.Queue.ShouldAutoJoinSpectators)
+        // Auto-Join-Methode - von Joni
+        _plugin.AddTimer(1.5f, () =>
         {
-            _plugin.AddTimer(1.0f, () =>
+            if (!PlayerHelper.IsValid(player))
             {
-                if (!PlayerHelper.IsValid(player))
-                {
-                    return;
-                }
+                return;
+            }
+        //Forced auf T weil man sonst in den Team-Pick Screen kommt
+            player.ChangeTeam(CsTeam.Terrorist); 
 
-                player.ChangeTeam(CsTeam.Spectator);
-                player.ExecuteClientCommand("teammenu");
-            });
-        }
+            _gameManager.QueueManager.PlayerJoinedTeam(player, CsTeam.None, CsTeam.Terrorist);
+        });
 
         // Grant VIP to contributors
         if (new List<ulong> { 76561198028510846, 76561198044886803, 76561198414501446, 76561199074660131 }.Contains(player.SteamID))
